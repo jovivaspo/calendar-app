@@ -6,8 +6,13 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { getMessages } from "../../helpers/getMessage";
 import esEs from "date-fns/locale/es";
 
-import { addHours, parse, startOfWeek, getDay, format } from "date-fns";
+import { parse, startOfWeek, getDay, format } from "date-fns";
 import CalendarEvent from "../components/CalendarEvent";
+import CalendarModal from "../components/CalendarModal";
+import { useUiStore } from "../../hooks/useUiStore";
+import { useCalendarStore } from "../../hooks/useCalendarStore";
+import FabAddNew from "../components/FabAddNew";
+import FabDelete from "../components/FabDelete";
 
 const locales = {
   es: esEs,
@@ -21,24 +26,14 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-const events = [
-  {
-    title: "Cumpleaños de Jorge",
-    notes: "Hay que preparar la tarta",
-    start: new Date(),
-    end: addHours(new Date(), 2),
-    bgColor: "fafafa",
-    user: {
-      _id: 123,
-      name: "Pepe",
-    },
-  },
-];
-
 const CalendarPage = () => {
+  const { events, activeEvent, setActiveEvent } = useCalendarStore();
+
   const [lastView, setLastView] = useState(
     localStorage.getItem("lastView") || "week"
   );
+
+  const { openDateModal } = useUiStore();
 
   const eventStyleGetter = (event, start, end, isSelected) => {
     // console.log(event, start, end, isSelected);
@@ -52,11 +47,13 @@ const CalendarPage = () => {
   };
 
   const onDoubleClick = (event) => {
-    console.log({ doubleClick: event });
+    openDateModal();
   };
 
   const onSelect = (event) => {
     console.log({ click: event });
+    setActiveEvent(event);
+    openDateModal();
   };
 
   const onViewChange = (event) => {
@@ -81,10 +78,13 @@ const CalendarPage = () => {
         components={{
           event: CalendarEvent,
         }}
+        onDoubleClickEvent={onDoubleClick}
         onSelectEvent={onSelect}
         onView={onViewChange}
-        onDoubleClickEvent={onDoubleClick}
       />
+      <CalendarModal />
+      <FabAddNew />
+      {activeEvent && <FabDelete />}
     </>
   );
 };
