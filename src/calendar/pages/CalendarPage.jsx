@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -13,6 +13,7 @@ import { useUiStore } from "../../hooks/useUiStore";
 import { useCalendarStore } from "../../hooks/useCalendarStore";
 import FabAddNew from "../components/FabAddNew";
 import FabDelete from "../components/FabDelete";
+import { useAuthStore } from "../../hooks/useAuthStore";
 
 const locales = {
   es: esEs,
@@ -27,7 +28,9 @@ const localizer = dateFnsLocalizer({
 });
 
 const CalendarPage = () => {
-  const { events, activeEvent, setActiveEvent } = useCalendarStore();
+  const { user } = useAuthStore();
+  const { events, activeEvent, setActiveEvent, startLoadingEvents } =
+    useCalendarStore();
 
   const [lastView, setLastView] = useState(
     localStorage.getItem("lastView") || "week"
@@ -38,8 +41,10 @@ const CalendarPage = () => {
   const eventStyleGetter = (event, start, end, isSelected) => {
     // console.log(event, start, end, isSelected);
 
+    const isMyEvent = user.uid === event.user_id || user.uid === event.user.uid;
+
     const style = {
-      backgroundColor: "red",
+      backgroundColor: isMyEvent ? "blue" : "red",
       borderRadious: "0px",
     };
 
@@ -60,6 +65,10 @@ const CalendarPage = () => {
     console.log({ viewChanged: event });
     localStorage.setItem("lastView", event);
   };
+
+  useEffect(() => {
+    startLoadingEvents();
+  }, []);
 
   return (
     <>
