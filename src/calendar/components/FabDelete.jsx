@@ -9,7 +9,11 @@ const FabDelete = () => {
   };
 
   return (
-    <button className="btn btn-danger fab-danger" onClick={handleDelete}>
+    <button
+      className="btn btn-danger fab-danger"
+      aria-label="btn-label"
+      onClick={handleDelete}
+    >
       <i className="fas fa-trash-alt"></i>
     </button>
   );

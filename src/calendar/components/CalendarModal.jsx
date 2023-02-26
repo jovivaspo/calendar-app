@@ -10,6 +10,7 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import es from "date-fns/locale/es";
 import { useUiStore } from "../../hooks/useUiStore";
 import { useCalendarStore } from "../../hooks/useCalendarStore";
+import { getVariables } from "../../helpers/getVariables";
 registerLocale("es", es);
 
 const customStyles = {
@@ -23,7 +24,9 @@ const customStyles = {
   },
 };
 
-Modal.setAppElement("#root");
+if (getVariables().VITE_MODE === "dev") {
+  Modal.setAppElement("#root");
+}
 
 const initialForm = {
   title: "",
